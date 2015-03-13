@@ -1,7 +1,5 @@
 [
-  "hubot-diagnostics",
   "hubot-help",
   "hubot-heroku-keepalive",
-  "hubot-google-translate",
   "hubot-redis-brain"
 ]
