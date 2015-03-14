@@ -43,7 +43,7 @@ module.exports = (robot) ->
   # Simple dice roll
   robot.respond /roll (\d*)?d?(\d*)?([+-]\d+)?\s*(.+)?$/i, (msg) ->
     formula = "#{msg.match[1] ?= 1}d#{msg.match[2] ?= 6}#{msg.match[3] ?= ''}"
-    msg.send "Rolled #{formula}#{if msg.match[4] then ' ' + msg.match[4]}: #{droll.roll(formula)}"
+    msg.send "Rolled #{formula}#{if msg.match[4] then ' ' + msg.match[4] else ''}: #{droll.roll(formula)}"
 
   # Eclipse Phase skill check
   robot.respond /skill ([1-9]\d*)?\s*(.+)?$/i, (msg) ->
