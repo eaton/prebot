@@ -1,12 +1,17 @@
-# Description:
-#   Example scripts for you to examine and try out.
+# Description
+#   Simple dice notation rolls, and Eclipse Phase specific rolls like skill checks
+#   and opposed tests. Calculates Margin of Failure/Success and recognizes criticals.
 #
-# Notes:
-#   They are commented out by default, because most of them are pretty silly and
-#   wouldn't be useful and amusing enough for day to day huboting.
-#   Uncomment the ones you want to try and experiment with.
+# Dependencies:
+#   "droll": "^0.1.1"
 #
-#   These are from the scripting documentation: https://github.com/github/hubot/blob/master/docs/scripting.md
+# Commands:
+#   hubot roll <notation> (comments) - 1d6-1 style dice notation.
+#   hubot skill <target> (comments) - Eclipse Phase skill test for a target number
+#   hubot oppose <attack> <defend> (comments) - Eclipse Phase opposed test with two target numbers
+#
+# Author:
+#   eaton
 
 droll = require("droll");
 
