@@ -8,6 +8,8 @@
 #
 #   These are from the scripting documentation: https://github.com/github/hubot/blob/master/docs/scripting.md
 
+droll = require("droll");
+
 module.exports = (robot) ->
 
   class EclipsePhaseRoller
@@ -18,18 +20,17 @@ module.exports = (robot) ->
       @success = true if @rolled is 0
       @success = false if @rolled is 99
       
-      @critical = (@rolled % 11 == 0) || (@rolled == 0)
+      @critical = @rolled % 11 == 0 or @rolled == 0
       if @success then @margin = @rolled else @margin = (100 - @rolled)
 
-    @valueOf: ->
-      output = ''
-      if @success then output += '-'
-      if @critical then output += '1'
-      output += @rolled.toString()
-      return parseInt(output)
+    valueOf: ->
+      output = if @success then '' else '-'  # Failure always sorts lower than success
+      output += '1' if @critical             # Magnitude increased for criticals
+      output += @rolled.toString()           # Actual rolled value
+      return +output                         # Aaaaaand return the int
 
-    @toString: ->
-      if @rolled < 10 then return ('0' + @rolled) else return @rolled
+    toString: ->
+      return if @rolled < 10 then '0' + @rolled else @rolled
 
     prettyPrint: ->
       output = "#{@rolled}, targeting #{@target}. "
@@ -39,24 +40,29 @@ module.exports = (robot) ->
       if @margin > 30 then output += " (#{@margin} #{if @success then 'MoS' else 'MoF'})"
       return output
 
+  # Simple dice roll
+  robot.respond /roll (\d*)?d?(\d*)?([+-]\d+)?\s*(.+)?$/i, (msg) ->
+    formula = "#{msg.match[1] ?= 1}d#{msg.match[2] ?= 6}#{msg.match[3] ?= ''}"
+    msg.send "Rolled #{formula}#{if msg.match[4] then ' ' + msg.match[4]}: #{droll.roll(formula)}"
+
+  # Eclipse Phase skill check
   robot.respond /skill ([1-9]\d*)?\s*(.+)?$/i, (msg) ->
     target = msg.match[1]
     comment = msg.match[2]
     result = new EclipsePhaseRoller target
-    if comment then msg.reply ("Skill check #{comment}: " + result.prettyPrint()) else msg.reply ("Skill check: " + result.prettyPrint())
+    if comment then msg.send ("Skill check #{comment}: " + result.prettyPrint()) else msg.send ("Skill check: " + result.prettyPrint())
 
-
+  # Eclipse Phase opposed check
   robot.respond /oppose ([1-9]\d*)\s+([1-9]\d*)\s*(.+)?$/i, (msg) ->
-    att = msg.match[1]
-    opp = msg.match[2]
+    att = new EclipsePhaseRoller msg.match[1]
+    opp = new EclipsePhaseRoller msg.match[2]
     comment = msg.match[3]
     
-    aR = new EclipsePhaseRoller att
-    oR = new EclipsePhaseRoller opp
-    
-    if comment then msg.reply ("Opposed test #{comment}: ") else msg.reply ("Opposed test: ")
-    msg.reply 'Attacker rolled ' + aR.prettyPrint()
-    msg.reply 'Defender rolled ' + oR.prettyPrint()
-    if aR == oR then msg.reply '*Deadlocked!*'
-    if aR > oR then msg.reply '*Attacker wins!*'
-    if aR < oR then msg.reply '*Defender wins!*'
+    if comment then msg.reply "Opposed test #{comment}: " else msg.reply ("Opposed test: ")
+    msg.send 'Attacker rolled ' + att.prettyPrint()
+    msg.send 'Defender rolled ' + opp.prettyPrint()
+    msg.send switch
+      when not att.success and not opp.success then '*Deadlocked!*'
+      when att == opp then '*Deadlocked!*'
+      when att > opp then '*Attacker wins!*'
+      when att < opp then '*Defender wins!*'
