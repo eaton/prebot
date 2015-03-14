@@ -1,5 +1,14 @@
 # Description:
 #   Change you can believe in!
+#
+# Dependencies:
+#   "lodash": "^3.5.0"
+#   "moment": "^2.9.0"
+#
+# Commands:
+#   hubot petition - Returns a random whitehouse.gov petition.
+#   hubot top petitions - Returns the top 5 whitehouse.gov petitions
+
 http = require('http')
 _ = require('lodash')
 moment = require('moment')
