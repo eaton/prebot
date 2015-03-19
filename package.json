@@ -5,6 +5,7 @@
   "author": "Jeff Eaton <verb@predicate.org>",
   "description": "A helpful robot for the Predicate crew.",
   "dependencies": {
+    "droll": "^0.1.1",
     "hubot": "^2.11.2",
     "hubot-diagnostics": "0.0.1",
     "hubot-help": "^0.1.1",
@@ -15,7 +16,7 @@
     "hubot-slack": "^3.3.0",
     "lodash": "^3.5.0",
     "moment": "^2.9.0",
-    "droll": "^0.1.1"
+    "node-jsxml": "^0.6.0"
   },
   "engines": {
     "node": "0.10.x"
