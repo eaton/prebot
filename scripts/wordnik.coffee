@@ -11,6 +11,8 @@
 
 http = require 'http'
 jsxml = require "node-jsxml"
+jq = require('./util').jq
+sugar = require 'sugar'
 
 apiKey = process.env.PREBOT_WORDNIK_APIKEY
 module.exports = (robot) ->
@@ -25,11 +27,18 @@ module.exports = (robot) ->
     ).on 'error', -> msg.reply('An error occurred trying to search wordnik. Sorry.')
 
   robot.respond /etym (.*)/, (msg) ->
-    word = encodeURIComponent(msg.match[1])
-    url = "http://api.wordnik.com/v4/word.json/#{word}/etymologies?useCanonical=true&api_key=#{apiKey}"
-    doHttpGet msg, url, (data) ->
-      xml = new jsxml.XML(data[0])
-      msg.send "#{data[0].replace(/<[^>]*>/g, '', 'g').trim()}"
+    word = msg.match[1]
+    url = "http://www.etymonline.com/index.php?allowed_in_frame=0&search=#{word.replace(' ', '%20')}&searchmode=none"
+    jq msg, url, ($) ->
+      definition = $('dd:first').text().compact()
+      #console.log "definition from #{url}: #{definition}"
+      if definition.length > 0
+        msg.send "\"#{definition.truncate(400)}\""
+      else
+        msg.send "No matching search results on etymonline.com for \"#{word}\""
+      if definition.length > 450
+        msg.send "Read more at: #{url}"
+
   robot.respond /define (.*)/, (msg) ->
     word = encodeURIComponent(msg.match[1])
     url = "http://api.wordnik.com/v4/word.json/#{word}/definitions?sourceDictionaries=all&useCanonical=true&api_key=#{apiKey}"
