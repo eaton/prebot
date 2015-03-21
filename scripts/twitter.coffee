@@ -36,7 +36,6 @@ module.exports = (robot) ->
 
   robot.respond /twitter (.*)/i, (msg) ->
     twitter_query = msg.match[1]
-    msg.send "Now searching Twitter for: #{twitter_query}"
     twitter_search robot, msg, twitter_query
 
 twitter_search = (robot, msg, query) ->
