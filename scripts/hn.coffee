@@ -26,7 +26,7 @@ module.exports = (robot) ->
     url = "https://hacker-news.firebaseio.com/v0/item/#{itemId}.json"
     doHttpGet msg, url, (data) ->
       if data.type == 'comment'
-        msg.send "HN Comment by #{data.by}\n```#{he.decode(data.text.replace('<p>', '\n\n'))}```"
+        msg.send "HN Comment by #{data.by}\n```#{he.decode(data.text.replace(/<p>/g, '\n\n'))}```"
       else if data.type == 'story'
         msg.send "`#{data.title}` by #{data.by} (#{data.score} points)"
       else
