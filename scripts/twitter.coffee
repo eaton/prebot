@@ -47,9 +47,9 @@ twitter_search = (robot, msg, query) ->
       if tweets.statuses? and tweets.statuses.length > 0
         parsed_tweets = []
         for tweet in tweets.statuses.reverse()
-          if not tweet.text.startswith("RT")
-            parsed_tweets.append(tweet)
-          if parsed_tweets.length = 5
+          if tweet.text.trim().indexOf('RT') != 0
+            parsed_tweets.push(tweet)
+          if parsed_tweets.length == 5
             break
         for tweet in parsed_tweets
           msg.send "`@#{tweet.user.screen_name}`: #{tweet.text}"
