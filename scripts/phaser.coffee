@@ -26,7 +26,7 @@ module.exports = (robot) ->
       @success = false if @rolled is 99
       
       @critical = @rolled % 11 == 0 or @rolled == 0
-      if @success then @margin = @rolled else @margin = (100 - @rolled)
+      if @success then @margin = @rolled else @margin = (@rolled - @target)
 
     valueOf: ->
       output = if @success then '' else '-'  # Failure always sorts lower than success
