@@ -45,5 +45,11 @@ twitter_search = (robot, msg, query) ->
     .get() (err, response, body) ->
       tweets = JSON.parse(body)
       if tweets.statuses? and tweets.statuses.length > 0
-        for tweet in (if tweets.statuses.length > 5 then _.take(tweets.statuses.reverse(), 5) else tweets.statuses.reverse())
+        parsed_tweets = []
+        for tweet in tweets.statuses.reverse()
+          if tweet.text.trim().indexOf('RT') != 0
+            parsed_tweets.push(tweet)
+          if parsed_tweets.length == 5
+            break
+        for tweet in parsed_tweets
           msg.send "`@#{tweet.user.screen_name}`: #{tweet.text}"
